@@ -1,0 +1,91 @@
+services:
+  client-dev:
+    build:
+      context: ./e-store-client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./e-store-client/:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=development
+      - VITE_PORT=8000
+    profiles:
+      - dev
+
+  client-prod:
+    build:
+      context: ./e-store-client
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    environment:
+      - NODE_ENV=production
+      - VITE_PORT=8000
+    profiles:
+      - prod
+
+  server-dev:
+    build:
+      context: ./e-store-server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./e-store-server/:/app
+      - /app/node_modules
+    env_file:
+      - ./e-store-server/.env
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=mysql
+    depends_on: 
+      - mysql
+    networks:
+      - app-network
+    profiles:
+      - dev
+  server-prod:
+    build:
+      context: ./e-store-server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./e-store-server/:/app
+      - /app/node_modules
+    env_file:
+      - ./e-store-server/.env
+    environment:
+      - NODE_ENV=production
+    depends_on: 
+      - mysql
+    networks:
+      - app-network
+    profiles:
+      - prod
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - ./e-store-server/.mysql.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_vol:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql_vol:
+
+networks:
+  app-network:
+    driver: bridge
+version: "3.8"

@@ -1,0 +1,6 @@
+[submodule "e-store-client"]
+	path = e-store-client
+	url = https://github.com/aaa-lt/e-store-client.git
+[submodule "e-store-server"]
+	path = e-store-server
+	url = https://github.com/aaa-lt/e-store-server.git
